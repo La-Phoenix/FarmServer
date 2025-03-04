@@ -140,7 +140,7 @@ namespace FarmServer.Infrastructure.Services
             //        {
             //            var newField = new Field
             //            {
-            //                Id = new Guid(),
+            //                Id = Guid.NewGuid(),,
             //                Name = fieldDTO.Name,
             //                CropType = fieldDTO.CropType,
             //                Area = fieldDTO.Area,
@@ -190,7 +190,7 @@ namespace FarmServer.Infrastructure.Services
                     {
                         var newFarmer = new Farmer
                         {
-                            Id = new Guid(),
+                            Id = Guid.NewGuid(),
                             Name = farmerDTO.Name,
                             Email = farmerDTO.Email,
                             Location = farmerDTO.Location

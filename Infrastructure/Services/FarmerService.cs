@@ -120,7 +120,7 @@ namespace FarmServer.Infrastructure.Services
                     {
                         var newFarm = new Farm
                         {
-                            Id = new Guid(),
+                            Id = Guid.NewGuid(),
                             Name = farmDto.Name,
                             Location = farmDto.Location
                         };
@@ -141,6 +141,7 @@ namespace FarmServer.Infrastructure.Services
                     // Upadate simple properties
                     if (!string.IsNullOrEmpty(updatedFarm.Name)) farm.Name = updatedFarm.Name;
                     if (!string.IsNullOrEmpty(updatedFarm.Location)) farm.Location = updatedFarm.Location;
+
 
                     // Mark the farm as modified so that it can be updated in the database
                     farmRepository.MarkAsModified(farm);

@@ -1,6 +1,7 @@
 ﻿using FarmServer.Domain.Entities;
 using FarmServer.DTOs;
 using FarmServer.DTOs.Farm;
+using FarmServer.DTOs.Farmer;
 using FarmServer.Infrastructure.Repositories;
 using FarmServer.Interfaces;
 using System.Security.Cryptography.X509Certificates;
@@ -12,17 +13,19 @@ namespace FarmServer.Infrastructure.Services
     public class FarmService : IFarmService
     {
         private readonly IFarmRepository farmRepository;
+        private readonly IFarmerRepository farmerRepository;
 
-        public FarmService(IFarmRepository farmRepository) 
+        public FarmService(IFarmRepository farmRepository, IFarmerRepository farmerRepository) 
         {
             this.farmRepository = farmRepository;
+            this.farmerRepository = farmerRepository;
         }
 
         public async Task<IEnumerable<FarmDTO>> GetAllAsync()
         {
             var farms = await farmRepository.GetAllAsync();
             // Convert farms to JSON for better logging
-            Console.WriteLine(JsonSerializer.Serialize(farms, new JsonSerializerOptions { WriteIndented = true }));
+            //Console.WriteLine(JsonSerializer.Serialize(farms, new JsonSerializerOptions { WriteIndented = true }));
 
             if (!farms.Any())
             {
@@ -88,103 +91,137 @@ namespace FarmServer.Infrastructure.Services
             {
                 Id = id,
                 Name = farmDTO.Name,
-                Location = farmDTO.Location,
-                Farmers = farmDTO.Farmers.Select(farmerDTO => new Farmer
-                {
-                    Id = Guid.NewGuid(),
-                    Name = farmerDTO.Name,
-                    Email = farmerDTO.Email,
-                    Location = farmerDTO.Location
-                }).ToList(),
-                Fields = farmDTO.Fields.Select(fieldDTO => new Field
-                {
-                    Id = Guid.NewGuid(),
-                    Name = fieldDTO.Name,
-                    CropType = fieldDTO.CropType,
-                    Area = fieldDTO.Area,
-                    FarmId = id
-                }).ToList()
+                Location = farmDTO.Location
             };
 
             await farmRepository.AddAsync(farm);
-            Console.WriteLine($"1: {farm}");
 
-            Console.WriteLine($"2: {farmDTO}");
             return new FarmDTO
             {
                 Id = farm.Id,
                 Name = farm.Name,
-                Location = farm.Location,
-                Farmers = farm.Farmers.Select(farmer => new FarmerDTO
-                {
-                    Id = farmer.Id,
-                    Name = farmer.Name,
-                    Email = farmer.Email,
-                    Location = farmer.Location
-                }).ToList(),
-                Fields = farm.Fields.Select(field => new FieldDTO
-                {
-                    Id = field.Id,
-                    Name = field.Name,
-                    CropType = field.CropType,
-                    Area = field.Area
-                }).ToList()
+                Location = farm.Location
             };
         }
 
 
 
         // Update Farm
-        public async Task<FarmDTO?> UpdateAsync(Guid id, CreateFarmDTO farmDTO)
+        public async Task<FarmDTO?> UpdateAsync(Guid id, UpdateFarmDTO farmDTO)
         {
             var farm = await farmRepository.GetByIdAsync(id);
-            Console.WriteLine($"1: {farm}");
 
             if (farm == null) return null;
 
-            farm.Name = farmDTO.Name;
-            farm.Location = farmDTO.Location;
+            // Update simple properties
+            if (!string.IsNullOrEmpty(farmDTO.Name)) farm.Name = farmDTO.Name;
+            if (!string.IsNullOrEmpty(farmDTO.Location)) farm.Location = farmDTO.Location;
 
-            // Update Fields(Add, Modify, Remove)
-            var existingFieldIds = farm.Fields.Select(f => f.Id).ToList();
-            var updatedFieldIds = farmDTO.Fields.Select(f => f.Id).ToList();
+            ////Get list of ids for fields in request farm and database farm
+            //var existingFieldIds = farm.Fields.Select(f => f.Id).ToList();
+            //var updatedFieldIds = farmDTO.Fields.Select(f => f.Id).ToList();
 
-            // Add new fields
-            var newFields = farmDTO.Fields
-                .Where(f => !existingFieldIds.Contains(f.Id))
-                .Select(f => new Field
-                {
-                    Id = f.Id,
-                    Name = f.Name,
-                    CropType = f.CropType,
-                    Area = f.Area,
-                    FarmId = farm.Id
-                }).ToList();
+            //// Add new fields that are not already in the farm's field list
+            //var fieldsToAdd = updatedFieldIds.Except(existingFieldIds);
 
-            farm.Fields.ToList().AddRange(newFields);
-            //foreach (var newField in newFields)
+            //foreach (var fieldId in fieldsToAdd)
             //{
-            //    farm.Fields.Add(newField);
+            //    // To get the fieldToAdd details from the farmDTO
+            //    var fieldDTO = farmDTO.Fields.FirstOrDefault(f => f.Id == fieldId);
+            //    if (fieldDTO != null)
+            //    {
+            //        // Check if the field already exists in the database
+            //        var field = await fieldRepository.GetByIdAsync(fieldId);
+            //        if (field != null)
+            //        {
+            //            farm.Fields.Add(field);
+            //        }
+            //        else
+            //        {
+            //            var newField = new Field
+            //            {
+            //                Id = new Guid(),
+            //                Name = fieldDTO.Name,
+            //                CropType = fieldDTO.CropType,
+            //                Area = fieldDTO.Area,
+            //                FarmId = farm.Id
+            //            };
+            //            await fieldRepository.AddAsync(newField);
+            //            farm.Fields.Add(newField);
+
+            //        }
+            //    }
             //}
 
-            // Update existing fields
-            foreach (var field in farm.Fields)
+            //// Update existing fields in the farm's field list
+            //foreach (var field in farm.Fields.ToList())
+            //{
+            //    // To get the fieldToUpdate details from the farmDTO
+            //    var updatedField = farmDTO.Fields.FirstOrDefault(f => f.Id == field.Id);
+            //    if (updatedField != null)
+            //    {
+            //        // Update simple properties
+            //        if (!string.IsNullOrEmpty(updatedField.Name)) field.Name = updatedField.Name;
+            //        if (!string.IsNullOrEmpty(updatedField.CropType)) field.CropType = updatedField.CropType;
+            //        if (updatedField.Area != 0) field.Area = updatedField.Area;
+            //    }
+            //}
+
+            // Get list of ids for farmers in request farm and database farm
+            var existingFarmerIds = farm.Farmers.Select(f => f.Id).ToList();
+            var updatedFarmerIds = farmDTO.Farmers.Select(f => f.Id).ToList();
+
+            // Add new farmers that are not already in the farm's farmer list
+            var farmersToAdd = updatedFarmerIds.Except(existingFarmerIds);
+
+            foreach (var farmerId in farmersToAdd)
             {
-                var updatedField = farmDTO.Fields.FirstOrDefault(f => f.Id == field.Id);
-                if (updatedField != null)
+                // To get the farmerToAdd details from the farmDTO
+                var farmerDTO = farmDTO.Farmers.FirstOrDefault(f => f.Id == farmerId);
+                if (farmerDTO != null)
                 {
-                    field.CropType = updatedField.CropType;
-                    field.Area = updatedField.Area;
-                    field.Name = updatedField.Name;
+                    // Check if the farmer already exists in the database
+                    var farmer = await farmerRepository.GetByIdAsync(farmerId);
+                    if (farmer != null)
+                    {
+                        farm.Farmers.Add(farmer);
+                    }
+                    else
+                    {
+                        var newFarmer = new Farmer
+                        {
+                            Id = new Guid(),
+                            Name = farmerDTO.Name,
+                            Email = farmerDTO.Email,
+                            Location = farmerDTO.Location
+                        };
+                        await farmerRepository.AddAsync(newFarmer);
+                        farm.Farmers.Add(newFarmer);
+                    }
                 }
             }
 
-            // Remove fields that are not in the updated DTO
-            farm.Fields.ToList().RemoveAll(f => !updatedFieldIds.Contains(f.Id));
+            // Update existing farmers in the farm's farmer list
+            foreach (var farmer in farm.Farmers.ToList())
+            {
+                // To get the farmerToUpdate details from the farmDTO
+                var updatedFarmer = farmDTO.Farmers.FirstOrDefault(f => f.Id == farmer.Id);
+                if (updatedFarmer != null)
+                {
+                    // Update simple properties
+                    if (!string.IsNullOrEmpty(updatedFarmer.Name)) farmer.Name = updatedFarmer.Name;
+                    if (!string.IsNullOrEmpty(updatedFarmer.Email)) farmer.Email = updatedFarmer.Email;
+                    if (!string.IsNullOrEmpty(updatedFarmer.Location)) farmer.Location = updatedFarmer.Location;
+
+                    farmerRepository.MarkAsModified(farmer);
+                }
+            }
 
             await farmRepository.UpdateAsync(farm);
-            Console.WriteLine($"2: {farm}");
-            Console.WriteLine($"3: {farmDTO}");
+            // Save field changes to the database
+            //await fieldRepository.SaveAsync();
+            // Save farmer changes to the database
+            await farmerRepository.SaveAsync();
 
             return new FarmDTO
             {
@@ -211,7 +248,6 @@ namespace FarmServer.Infrastructure.Services
         public async Task<bool> DeleteAsync(Guid id)
         {
             var farm = await farmRepository.GetByIdAsync(id);
-            Console.WriteLine($"1: {farm}");
             if (farm == null) return false;
             await farmRepository.DeleteAsync(id);
             return true;

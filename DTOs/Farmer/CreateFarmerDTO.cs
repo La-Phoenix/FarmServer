@@ -1,10 +1,7 @@
-﻿using FarmServer.Domain.Entities;
-
-namespace FarmServer.DTOs
+﻿namespace FarmServer.DTOs.Farmer
 {
-    public class FarmerDTO
+    public class CreateFarmerDTO
     {
-        public Guid Id { get; set; }
         public required string Name { get; set; }
         public required string Email { get; set; }
         public required string Location { get; set; }

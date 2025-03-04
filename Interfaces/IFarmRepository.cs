@@ -9,5 +9,7 @@ namespace FarmServer.Interfaces
         Task<Farm> AddAsync(Farm farm);
         Task<Farm> UpdateAsync(Farm farm);
         Task DeleteAsync(Guid id);
+        Task SaveAsync();
+        void MarkAsModified(Farm farm);
     }
 }

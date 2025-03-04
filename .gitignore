@@ -482,3 +482,21 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Ignore Docker-related files
+.dockerignore
+Dockerfile*
+docker-compose*.yml
+docker-compose.override.yml
+
+# Ignore Docker volumes and logs
+**/docker-volumes/
+**/docker-data/
+**/docker-logs/
+
+# Ignore Docker Desktop files (if using Docker on Windows/macOS)
+.vscode/docker/
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/settings.json
+

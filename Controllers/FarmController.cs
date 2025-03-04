@@ -67,7 +67,7 @@ namespace FarmServer.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<FarmDTO>> Update(Guid id, [FromBody] CreateFarmDTO farmDto)
+        public async Task<ActionResult<FarmDTO>> Update(Guid id, [FromBody] UpdateFarmDTO farmDto)
         {
             if (farmDto == null) return BadRequest(new { message = "Invalid Farm Data Provided." });
             try

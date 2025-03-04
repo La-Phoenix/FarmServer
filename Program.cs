@@ -20,10 +20,12 @@ builder.Services.AddDbContext<FarmDbContext>(options =>
 
 // Register repositories
 builder.Services.AddScoped<IFarmRepository, FarmRepository>();  // Repository for DB access
+builder.Services.AddScoped<IFarmerRepository, FarmerRepository>();  // Repository for DB access
 
 
 // Register services
 builder.Services.AddScoped<IFarmService, FarmService>(); // Service for business logic`
+builder.Services.AddScoped<IFarmerService, FarmerService>(); // Service for business logic
 
 
 var app = builder.Build();

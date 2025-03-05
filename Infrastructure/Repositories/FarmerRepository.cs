@@ -37,6 +37,12 @@ namespace FarmServer.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Farmer?> GetByEmailAsync(string email)
+        {
+            return await context.Farmers
+                .Include(f => f.Farms).FirstOrDefaultAsync(f => f.Email == email);
+        } 
+
         public async Task<Farmer?> GetByIdAsync(Guid id)
         {
             return await context.Farmers

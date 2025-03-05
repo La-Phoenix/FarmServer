@@ -167,21 +167,21 @@ namespace FarmServer.Infrastructure.Services
             //    }
             //}
 
-            // Get list of ids for farmers in request farm and database farm
-            var existingFarmerIds = farm.Farmers.Select(f => f.Id).ToList();
-            var updatedFarmerIds = farmDTO.Farmers.Select(f => f.Id).ToList();
+            // Get list of emails for farmers in request farm and database farm
+            var existingFarmerEmails = farm.Farmers.Select(f => f.Email).ToList();
+            var updatedFarmerEmails = farmDTO.Farmers.Select(f => f.Email).ToList();
 
             // Add new farmers that are not already in the farm's farmer list
-            var farmersToAdd = updatedFarmerIds.Except(existingFarmerIds);
+            var farmersToAdd = updatedFarmerEmails.Except(existingFarmerEmails);
 
-            foreach (var farmerId in farmersToAdd)
+            foreach (var farmerEmail in farmersToAdd)
             {
                 // To get the farmerToAdd details from the farmDTO
-                var farmerDTO = farmDTO.Farmers.FirstOrDefault(f => f.Id == farmerId);
+                var farmerDTO = farmDTO.Farmers.FirstOrDefault(f => f.Email == farmerEmail);
                 if (farmerDTO != null)
                 {
                     // Check if the farmer already exists in the database
-                    var farmer = await farmerRepository.GetByIdAsync(farmerId);
+                    var farmer = await farmerRepository.GetByEmailAsync(farmerEmail);
                     if (farmer != null)
                     {
                         farm.Farmers.Add(farmer);
@@ -191,9 +191,9 @@ namespace FarmServer.Infrastructure.Services
                         var newFarmer = new Farmer
                         {
                             Id = Guid.NewGuid(),
-                            Name = farmerDTO.Name,
+                            Name = farmerDTO.Name ?? string.Empty, // Ensure Name is not null
                             Email = farmerDTO.Email,
-                            Location = farmerDTO.Location
+                            Location = farmerDTO.Location ?? string.Empty // Ensure Location is not null
                         };
                         await farmerRepository.AddAsync(newFarmer);
                         farm.Farmers.Add(newFarmer);
@@ -205,12 +205,11 @@ namespace FarmServer.Infrastructure.Services
             foreach (var farmer in farm.Farmers.ToList())
             {
                 // To get the farmerToUpdate details from the farmDTO
-                var updatedFarmer = farmDTO.Farmers.FirstOrDefault(f => f.Id == farmer.Id);
+                var updatedFarmer = farmDTO.Farmers.FirstOrDefault(f => f.Email == farmer.Email);
                 if (updatedFarmer != null)
                 {
                     // Update simple properties
                     if (!string.IsNullOrEmpty(updatedFarmer.Name)) farmer.Name = updatedFarmer.Name;
-                    if (!string.IsNullOrEmpty(updatedFarmer.Email)) farmer.Email = updatedFarmer.Email;
                     if (!string.IsNullOrEmpty(updatedFarmer.Location)) farmer.Location = updatedFarmer.Location;
 
                     farmerRepository.MarkAsModified(farmer);

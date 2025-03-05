@@ -6,6 +6,7 @@ namespace FarmServer.Interfaces
     {
         Task<IEnumerable<Farmer>> GetAllAsync();
         Task<Farmer?> GetByIdAsync(Guid id);
+        Task<Farmer?> GetByEmailAsync(string email);
         Task<Farmer> AddAsync(Farmer farmer);
         Task<Farmer> UpdateAsync(Farmer farmer);
         Task DeleteAsync(Guid id);

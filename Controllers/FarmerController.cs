@@ -57,6 +57,8 @@ namespace FarmServer.Controllers
             if (farmerDto == null) return BadRequest(new { message = "Invalid farmer data provided." });
             try
             {
+                var farmerExist = farmerDto.Email != null ? await farmerService.GetByEmailAsync(farmerDto.Email) : null;
+                if (farmerExist != null) return BadRequest(new { message = $"Farmer with email: {farmerDto.Email}, already exists." });
                 var farmer = await farmerService.CreateAsync(farmerDto);
                 return CreatedAtAction(nameof(GetById), new { id = farmer.Id }, farmer);
             }
@@ -68,7 +70,7 @@ namespace FarmServer.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<FarmerDTO>> Update(Guid id, [FromBody] UpdateFarmerDTO farmerDto)
+        public async Task<ActionResult<FarmerDTO>> Update(Guid id, [FromBody] PartialUpdateFarmerDTO farmerDto)
         {
             if (farmerDto == null) return BadRequest(new { message = "Invalid farmer data provided." });
             try

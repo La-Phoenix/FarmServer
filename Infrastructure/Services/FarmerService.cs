@@ -88,14 +88,32 @@ namespace FarmServer.Infrastructure.Services
             };
         }
 
-        public async Task<FarmerDTO?> UpdateAsync(Guid id, UpdateFarmerDTO farmerDto)
+        public async Task<FarmerDTO?> GetByEmailAsync(string email)
+        {
+            var farmer = await farmerRepository.GetByEmailAsync(email);
+            if (farmer == null) return null;
+            return new FarmerDTO
+            {
+                Id = farmer.Id,
+                Name = farmer.Name,
+                Email = farmer.Email,
+                Location = farmer.Location,
+                Farms = farmer.Farms.Select(farm => new FarmDTO
+                {
+                    Id = farm.Id,
+                    Name = farm.Name,
+                    Location = farm.Location
+                }).ToList()
+            };
+        }
+
+        public async Task<FarmerDTO?> UpdateAsync(Guid id, PartialUpdateFarmerDTO farmerDto)
         {
             var farmer = await farmerRepository.GetByIdAsync(id);
             if (farmer == null) return null;
 
             // Update simple properties
             if (!string.IsNullOrEmpty(farmerDto.Name)) farmer.Name = farmerDto.Name;
-            if (!string.IsNullOrEmpty(farmerDto.Email)) farmer.Email = farmerDto.Email;
             if (!string.IsNullOrEmpty(farmerDto.Location)) farmer.Location = farmerDto.Location;
 
             var existingFarmId = farmer.Farms.Select(farm => farm.Id);

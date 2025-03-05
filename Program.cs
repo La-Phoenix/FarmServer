@@ -2,7 +2,8 @@ using FarmServer;
 using FarmServer.Infrastructure;
 using FarmServer.Infrastructure.Repositories;
 using FarmServer.Infrastructure.Services;
-using FarmServer.Interfaces;
+using FarmServer.Interfaces.IFarm;
+using FarmServer.Interfaces.IFarmer;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

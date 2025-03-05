@@ -1,7 +1,8 @@
 ﻿using FarmServer.Domain.Entities;
 using FarmServer.DTOs.Farm;
 using FarmServer.DTOs.Farmer;
-using FarmServer.Interfaces;
+using FarmServer.Interfaces.IFarm;
+using FarmServer.Interfaces.IFarmer;
 
 namespace FarmServer.Infrastructure.Services
 {

@@ -2,11 +2,8 @@
 using FarmServer.DTOs;
 using FarmServer.DTOs.Farm;
 using FarmServer.DTOs.Farmer;
-using FarmServer.Infrastructure.Repositories;
-using FarmServer.Interfaces;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using FarmServer.Interfaces.IFarm;
+using FarmServer.Interfaces.IFarmer;
 
 namespace FarmServer.Infrastructure.Services
 {

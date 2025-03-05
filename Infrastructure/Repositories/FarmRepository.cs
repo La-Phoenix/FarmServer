@@ -1,6 +1,5 @@
 ﻿using FarmServer.Domain.Entities;
-using FarmServer.Infrastructure;
-using FarmServer.Interfaces;
+using FarmServer.Interfaces.IFarm;
 using Microsoft.EntityFrameworkCore;
 
 namespace FarmServer.Infrastructure.Repositories

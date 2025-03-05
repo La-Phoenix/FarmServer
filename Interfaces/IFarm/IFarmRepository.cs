@@ -1,6 +1,6 @@
 ﻿using FarmServer.Domain.Entities;
 
-namespace FarmServer.Interfaces
+namespace FarmServer.Interfaces.IFarm
 {
     public interface IFarmRepository
     {

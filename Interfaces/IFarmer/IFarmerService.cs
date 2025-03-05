@@ -1,6 +1,6 @@
 ﻿using FarmServer.DTOs.Farmer;
 
-namespace FarmServer.Interfaces
+namespace FarmServer.Interfaces.IFarmer
 {
     public interface IFarmerService
     {

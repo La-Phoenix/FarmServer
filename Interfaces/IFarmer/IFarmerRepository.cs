@@ -1,6 +1,7 @@
-﻿using FarmServer.Domain.Entities;
+﻿
+using FarmServer.Domain.Entities;
 
-namespace FarmServer.Interfaces
+namespace FarmServer.Interfaces.IFarmer
 {
     public interface IFarmerRepository
     {

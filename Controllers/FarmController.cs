@@ -1,6 +1,5 @@
 ﻿using FarmServer.DTOs.Farm;
-using FarmServer.Infrastructure.Services;
-using FarmServer.Interfaces;
+using FarmServer.Interfaces.IFarm;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FarmServer.Controllers

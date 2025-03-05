@@ -1,6 +1,5 @@
 ﻿using FarmServer.DTOs.Farmer;
-using FarmServer.Interfaces;
-using Microsoft.AspNetCore.Http;
+using FarmServer.Interfaces.IFarmer;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FarmServer.Controllers

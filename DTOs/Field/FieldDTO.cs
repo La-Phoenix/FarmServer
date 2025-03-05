@@ -1,6 +1,7 @@
-﻿using FarmServer.Domain.Entities;
+﻿
+using FarmServer.DTOs.Farm;
 
-namespace FarmServer.DTOs
+namespace FarmServer.DTOs.Field
 {
     public class FieldDTO
     {
@@ -8,5 +9,9 @@ namespace FarmServer.DTOs
         public required string Name { get; set; }
         public required string CropType { get; set; }
         public required decimal Area { get; set; }
+
+        // Foreign Key to Farm (One-to-Many Relationship)
+        public required Guid FarmId { get; set; }
+        public FarmDTO Farm { get; set; } = null!;
     }
 }

@@ -2,6 +2,7 @@
 using FarmServer.DTOs;
 using FarmServer.DTOs.Farm;
 using FarmServer.DTOs.Farmer;
+using FarmServer.DTOs.Field;
 using FarmServer.Interfaces.IFarm;
 using FarmServer.Interfaces.IFarmer;
 
@@ -46,7 +47,8 @@ namespace FarmServer.Infrastructure.Services
                     Id = field.Id,
                     Name = field.Name,
                     CropType = field.CropType,
-                    Area = field.Area
+                    Area = field.Area,
+                    FarmId = field.FarmId
                 }).ToList()
             });
         }
@@ -75,7 +77,8 @@ namespace FarmServer.Infrastructure.Services
                     Id = field.Id,
                     Name = field.Name,
                     CropType = field.CropType,
-                    Area = field.Area
+                    Area = field.Area,
+                    FarmId = field.FarmId
                 }).ToList()
             };
 
@@ -236,7 +239,8 @@ namespace FarmServer.Infrastructure.Services
                     Id = field.Id,
                     Name = field.Name,
                     CropType = field.CropType,
-                    Area = field.Area
+                    Area = field.Area,
+                    FarmId = field.FarmId
                 }).ToList()
             };
         }

@@ -4,6 +4,7 @@ using FarmServer.Infrastructure.Repositories;
 using FarmServer.Infrastructure.Services;
 using FarmServer.Interfaces.IFarm;
 using FarmServer.Interfaces.IFarmer;
+using FarmServer.Interfaces.IField;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,11 +23,13 @@ builder.Services.AddDbContext<FarmDbContext>(options =>
 // Register repositories
 builder.Services.AddScoped<IFarmRepository, FarmRepository>();  // Repository for DB access
 builder.Services.AddScoped<IFarmerRepository, FarmerRepository>();  // Repository for DB access
+builder.Services.AddScoped<IFieldRepository, FieldRepository>();  // Repository for DB access
 
 
 // Register services
 builder.Services.AddScoped<IFarmService, FarmService>(); // Service for business logic`
 builder.Services.AddScoped<IFarmerService, FarmerService>(); // Service for business logic
+builder.Services.AddScoped<IFieldService, FieldService>(); // Service for business logic
 
 
 var app = builder.Build();

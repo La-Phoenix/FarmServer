@@ -1,5 +1,6 @@
 ﻿using FarmServer.Domain.Entities;
 using FarmServer.DTOs.Farmer;
+using FarmServer.DTOs.Field;
 
 namespace FarmServer.DTOs.Farm
 {

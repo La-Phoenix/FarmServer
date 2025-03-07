@@ -122,7 +122,13 @@ namespace FarmServer.Infrastructure.Services
                 Name = field.Name,
                 FarmId = field.FarmId,
                 CropType = field.CropType,
-                Area = field.Area
+                Area = field.Area,
+                Farm = new PartialFarmUpdateDTO
+                {
+                    Id = field.Farm.Id,
+                    Name = field.Farm.Name,
+                    Location = field.Farm.Location
+                }
             };
         }
     }

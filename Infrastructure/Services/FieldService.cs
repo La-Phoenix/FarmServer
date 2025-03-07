@@ -1,4 +1,5 @@
 ﻿using FarmServer.Domain.Entities;
+using FarmServer.DTOs.Farm;
 using FarmServer.DTOs.Field;
 using FarmServer.Interfaces.IFarm;
 using FarmServer.Interfaces.IField;
@@ -16,20 +17,20 @@ namespace FarmServer.Infrastructure.Services
             this.farmRepository = farmRepository;
         }
 
-        public async Task<FieldDTO> CreateAsync(CreateFieldDTO fieldDTO)
+        public async Task<FieldDTO?> CreateAsync(CreateFieldDTO fieldDTO)
         {
-            var id = Guid.NewGuid();
             var farm = await farmRepository.GetByIdAsync(fieldDTO.FarmId);
+            if (farm == null) return null;
+            var id = Guid.NewGuid();
             var field = new Field
             {
                 Id = id,
                 Name = fieldDTO.Name,
                 FarmId = fieldDTO.FarmId,
                 CropType = fieldDTO.CropType,
-                Area = fieldDTO.Area
+                Area = fieldDTO.Area,
+                //Farm = farm
             };
-            if (farm != null) field.Farm = farm;
-
             await fieldRepository.AddAsync(field);
 
             return new FieldDTO
@@ -38,7 +39,13 @@ namespace FarmServer.Infrastructure.Services
                 Name = field.Name,
                 CropType = field.CropType,
                 Area = field.Area,
-                FarmId = field.FarmId
+                FarmId = field.FarmId,
+                Farm = new PartialFarmUpdateDTO
+                {
+                    Id = farm.Id,
+                    Name = farm.Name,
+                    Location = farm.Location
+                }
             };
         }
 
@@ -64,7 +71,13 @@ namespace FarmServer.Infrastructure.Services
                 Name = field.Name,
                 FarmId = field.FarmId,
                 CropType = field.CropType,
-                Area = field.Area
+                Area = field.Area,
+                Farm = new PartialFarmUpdateDTO
+                {
+                    Id = field.Farm.Id,
+                    Name = field.Farm.Name,
+                    Location = field.Farm.Location
+                }
             }).ToList();
         }
 
@@ -78,7 +91,13 @@ namespace FarmServer.Infrastructure.Services
                 Name = field.Name,
                 FarmId = field.FarmId,
                 CropType = field.CropType,
-                Area = field.Area
+                Area = field.Area,
+                Farm = new PartialFarmUpdateDTO
+                {
+                    Id = field.Farm.Id,
+                    Name = field.Farm.Name,
+                    Location = field.Farm.Location
+                }
             };
         }
 

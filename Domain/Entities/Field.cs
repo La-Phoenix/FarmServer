@@ -1,4 +1,8 @@
-﻿namespace FarmServer.Domain.Entities
+﻿using FarmServer.DTOs.Farm;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
+namespace FarmServer.Domain.Entities
 {
     public class Field
     {
@@ -9,6 +13,9 @@
 
         // Foreign Key to Farm (One-to-Many Relationship)
         public required Guid FarmId { get; set; }
-        public Farm Farm { get; set; }  = null!;
+
+        // Navigation property to include Farm details
+        [ForeignKey("FarmId")]
+        public Farm Farm { get; set; } = null!;
     }
 }

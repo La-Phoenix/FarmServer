@@ -15,15 +15,12 @@ namespace FarmServer.Infrastructure.Repositories
 
         public async Task<IEnumerable<Field>> GetAllAsync()
         {
-            return await context.Fields.
-                Include(f => f.Farm).
-                ToListAsync();
+            return await context.Fields.Include(f => f.Farm).ToListAsync();
         }
 
         public async Task<Field?> GetByIdAsync(Guid id)
         {
-            return await context.Fields
-                .Include(f => f.Farm).FirstOrDefaultAsync(f => f.Id == id);
+            return await context.Fields.Include(f => f.Farm).FirstOrDefaultAsync(f => f.Id == id);
         }
 
         public async Task<Field> AddAsync(Field field)

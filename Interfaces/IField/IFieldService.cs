@@ -6,7 +6,7 @@ namespace FarmServer.Interfaces.IField
     {
         Task<IEnumerable<FieldDTO>> GetAllAsync();
         Task<FieldDTO?> GetByIdAsync(Guid id);
-        Task<FieldDTO> CreateAsync(CreateFieldDTO fieldDTO);
+        Task<FieldDTO?> CreateAsync(CreateFieldDTO fieldDTO);
         Task<FieldDTO?> UpdateAsync(Guid id, UpdateFieldDTO fieldDTO);
         Task<bool> DeleteAsync(Guid id);
     }

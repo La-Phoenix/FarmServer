@@ -38,7 +38,7 @@ namespace FarmServer.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<FieldDTO>> GetByIdAsync(Guid id)
+        public async Task<ActionResult<FieldDTO>> GetById(Guid id)
         {
             try
             {
@@ -56,17 +56,15 @@ namespace FarmServer.Controllers
         [HttpPost]
         public async Task<ActionResult<FieldDTO>> CreateAsync([FromBody] CreateFieldDTO createFieldDTO)
         {
-            if (createFieldDTO == null) return BadRequest(new { message = "Invalid field data provided." });
             try
             {
-                
-                var farmExist = await farmService.GetByIdAsync(createFieldDTO.FarmId);
-                if (farmExist == null) return Problem(detail: $"Farm with id: {createFieldDTO.FarmId}, NOT FOUND.", statusCode: 404);
+                if (createFieldDTO == null) return BadRequest(new { message = "Invalid field data provided." });
                 var field = await fieldService.CreateAsync(createFieldDTO);
-                if (field == null || field.Id == Guid.Empty)
+                if (field == null) return Problem(detail: $"Farm with id: {createFieldDTO.FarmId}, NOT FOUND.", statusCode: 404);
+                if (field.Id == Guid.Empty)
                     return Problem(detail: "Field creation failed.", statusCode: 500);
 
-                return CreatedAtAction(nameof(GetByIdAsync), new { id = field.Id }, field);
+                return CreatedAtAction(nameof(GetById), new { id = field.Id }, field);
             }
             catch (Exception ex)
             {
@@ -78,13 +76,13 @@ namespace FarmServer.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<FieldDTO>> UpdateAsync(Guid id, [FromBody] UpdateFieldDTO fieldDTO)
         {
-            if (fieldDTO == null) return BadRequest(new { message = "Invalid field data provided." });
             try
             {
+                if (fieldDTO == null) return BadRequest(new { message = "Invalid field data provided." });
                 if (fieldDTO.FarmId.HasValue)
                 {
                     var farmExist = await farmService.GetByIdAsync(fieldDTO.FarmId.Value);
-                    if (farmExist != null) return Problem(detail: $"Farm with id: {fieldDTO.FarmId.Value}, NOT FOUND.", statusCode: 404);
+                    if (farmExist == null) return Problem(detail: $"Farm with id: {fieldDTO.FarmId.Value}, NOT FOUND.", statusCode: 404);
                 }
                 var updatedField = await fieldService.UpdateAsync(id, fieldDTO);
                 if (updatedField == null) return NotFound(new { message = $"Field with id: {id}, NOT FOUND." });

@@ -12,6 +12,6 @@ namespace FarmServer.DTOs.Field
 
         // Foreign Key to Farm (One-to-Many Relationship)
         public required Guid FarmId { get; set; }
-        public FarmDTO Farm { get; set; } = null!;
+        public PartialFarmUpdateDTO Farm { get; set; } = null!;
     }
 }

@@ -1,4 +1,5 @@
-﻿using FarmServer.Domain.Entities;
+﻿using AutoMapper;
+using FarmServer.Domain.Entities;
 using FarmServer.DTOs.Farm;
 using FarmServer.DTOs.Farmer;
 using FarmServer.Interfaces.IFarm;
@@ -10,33 +11,23 @@ namespace FarmServer.Infrastructure.Services
     {
         private readonly IFarmerRepository farmerRepository;
         private readonly IFarmRepository farmRepository;
+        private readonly IMapper mapper;
 
-        public FarmerService(IFarmerRepository farmerRepository, IFarmRepository farmRepository)
+        public FarmerService(IFarmerRepository farmerRepository, IFarmRepository farmRepository, IMapper mapper)
         {
             this.farmerRepository = farmerRepository;
             this.farmRepository = farmRepository;
+            this.mapper = mapper;
         }
 
         public async Task<FarmerDTO> CreateAsync(CreateFarmerDTO farmerDto)
         {
             var id = Guid.NewGuid();
-            var farmer = new Farmer
-            {
-                Id = id,
-                Name = farmerDto.Name,
-                Email = farmerDto.Email,
-                Location = farmerDto.Location
-            };
+            var farmer = mapper.Map<Farmer>(farmerDto);
 
             await farmerRepository.AddAsync(farmer);
 
-            return new FarmerDTO
-            {
-                Id = farmer.Id,
-                Name = farmer.Name,
-                Email = farmer.Email,
-                Location = farmer.Location
-            };
+            return mapper.Map<FarmerDTO>(farmer);
         }
 
         public async Task<bool> DeleteAsync(Guid id)
@@ -55,57 +46,21 @@ namespace FarmServer.Infrastructure.Services
                 return new List<FarmerDTO>();
             }
 
-            return farmers.Select(farmer => new FarmerDTO
-            {
-                Id = farmer.Id,
-                Name = farmer.Name,
-                Email = farmer.Email,
-                Location = farmer.Location,
-                Farms = farmer.Farms.Select(farm => new FarmDTO
-                {
-                    Id = farm.Id,
-                    Name = farm.Name,
-                    Location = farm.Location
-                }).ToList()
-            });
+            return mapper.Map<IEnumerable<FarmerDTO>>(farmers);
         }
 
         public async Task<FarmerDTO?> GetByIdAsync(Guid id)
         {
             var farmer = await farmerRepository.GetByIdAsync(id);
             if (farmer == null) return null;
-            return new FarmerDTO
-            {
-                Id = farmer.Id,
-                Name = farmer.Name,
-                Email = farmer.Email,
-                Location = farmer.Location,
-                Farms = farmer.Farms.Select(farm => new FarmDTO
-                {
-                    Id = farm.Id,
-                    Name = farm.Name,
-                    Location = farm.Location
-                }).ToList()
-            };
+            return mapper.Map<FarmerDTO>(farmer);
         }
 
         public async Task<FarmerDTO?> GetByEmailAsync(string email)
         {
             var farmer = await farmerRepository.GetByEmailAsync(email);
             if (farmer == null) return null;
-            return new FarmerDTO
-            {
-                Id = farmer.Id,
-                Name = farmer.Name,
-                Email = farmer.Email,
-                Location = farmer.Location,
-                Farms = farmer.Farms.Select(farm => new FarmDTO
-                {
-                    Id = farm.Id,
-                    Name = farm.Name,
-                    Location = farm.Location
-                }).ToList()
-            };
+            return mapper.Map<FarmerDTO>(farmer);
         }
 
         public async Task<FarmerDTO?> UpdateAsync(Guid id, PartialUpdateFarmerDTO farmerDto)
@@ -137,12 +92,7 @@ namespace FarmServer.Infrastructure.Services
                     }
                     else
                     {
-                        var newFarm = new Farm
-                        {
-                            Id = Guid.NewGuid(),
-                            Name = farmDto.Name,
-                            Location = farmDto.Location
-                        };
+                        var newFarm = mapper.Map<Farm>(farmDto);
                         await farmRepository.AddAsync(newFarm);
 
                         farmer.Farms.Add(newFarm);
@@ -171,19 +121,7 @@ namespace FarmServer.Infrastructure.Services
             // Save the farm changes to the database
             await farmRepository.SaveAsync();
 
-            return new FarmerDTO
-            {
-                Id = farmer.Id,
-                Name = farmer.Name,
-                Email = farmer.Email,
-                Location = farmer.Location,
-                Farms = farmer.Farms.Select(farm => new FarmDTO
-                {
-                    Id = farm.Id,
-                    Name = farm.Name,
-                    Location = farm.Location
-                }).ToList()
-            };
+            return mapper.Map<FarmerDTO>(farmer);
         }
     }
 }

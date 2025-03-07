@@ -1,4 +1,5 @@
-﻿using FarmServer.Domain.Entities;
+﻿using AutoMapper;
+using FarmServer.Domain.Entities;
 using FarmServer.DTOs.Farm;
 using FarmServer.DTOs.Field;
 using FarmServer.Interfaces.IFarm;
@@ -10,43 +11,24 @@ namespace FarmServer.Infrastructure.Services
     {
         private readonly IFieldRepository fieldRepository;
         private readonly IFarmRepository farmRepository;
+        private readonly IMapper mapper;
 
-        public FieldService(IFieldRepository fieldRepository, IFarmRepository farmRepository)
+        public FieldService(IFieldRepository fieldRepository, IFarmRepository farmRepository, IMapper mapper)
         {
             this.fieldRepository = fieldRepository;
             this.farmRepository = farmRepository;
+            this.mapper = mapper;
         }
 
         public async Task<FieldDTO?> CreateAsync(CreateFieldDTO fieldDTO)
         {
             var farm = await farmRepository.GetByIdAsync(fieldDTO.FarmId);
             if (farm == null) return null;
-            var id = Guid.NewGuid();
-            var field = new Field
-            {
-                Id = id,
-                Name = fieldDTO.Name,
-                FarmId = fieldDTO.FarmId,
-                CropType = fieldDTO.CropType,
-                Area = fieldDTO.Area,
-                //Farm = farm
-            };
+
+            var field = mapper.Map<Field>(fieldDTO); // Automapper maps the properties of the fieldDTO to the field entity and assigns Id to a new Guid
             await fieldRepository.AddAsync(field);
 
-            return new FieldDTO
-            {
-                Id = field.Id,
-                Name = field.Name,
-                CropType = field.CropType,
-                Area = field.Area,
-                FarmId = field.FarmId,
-                Farm = new PartialFarmUpdateDTO
-                {
-                    Id = farm.Id,
-                    Name = farm.Name,
-                    Location = farm.Location
-                }
-            };
+            return mapper.Map<FieldDTO>(field);
         }
 
         public async Task<bool> DeleteAsync(Guid id)
@@ -65,40 +47,14 @@ namespace FarmServer.Infrastructure.Services
                 return new List<FieldDTO>();
             }
 
-            return fields.Select(field => new FieldDTO
-            {
-                Id = field.Id,
-                Name = field.Name,
-                FarmId = field.FarmId,
-                CropType = field.CropType,
-                Area = field.Area,
-                Farm = new PartialFarmUpdateDTO
-                {
-                    Id = field.Farm.Id,
-                    Name = field.Farm.Name,
-                    Location = field.Farm.Location
-                }
-            }).ToList();
+            return mapper.Map<IEnumerable<FieldDTO>>(fields);
         }
 
         public async Task<FieldDTO?> GetByIdAsync(Guid id)
         {
             var field = await fieldRepository.GetByIdAsync(id);
             if (field == null) return null;
-            return new FieldDTO
-            {
-                Id = field.Id,
-                Name = field.Name,
-                FarmId = field.FarmId,
-                CropType = field.CropType,
-                Area = field.Area,
-                Farm = new PartialFarmUpdateDTO
-                {
-                    Id = field.Farm.Id,
-                    Name = field.Farm.Name,
-                    Location = field.Farm.Location
-                }
-            };
+            return mapper.Map<FieldDTO>(field);
         }
 
         public async Task<FieldDTO?> UpdateAsync(Guid id, UpdateFieldDTO fieldDTO)
@@ -116,20 +72,7 @@ namespace FarmServer.Infrastructure.Services
 
             await fieldRepository.UpdateAsync(field);
 
-            return new FieldDTO
-            {
-                Id = field.Id,
-                Name = field.Name,
-                FarmId = field.FarmId,
-                CropType = field.CropType,
-                Area = field.Area,
-                Farm = new PartialFarmUpdateDTO
-                {
-                    Id = field.Farm.Id,
-                    Name = field.Farm.Name,
-                    Location = field.Farm.Location
-                }
-            };
+            return mapper.Map<FieldDTO>(field);
         }
     }
 }

@@ -20,12 +20,19 @@ namespace FarmServer.Infrastructure.Services
             this.mapper = mapper;
         }
 
+        public async Task<FarmerDTO?> Login(FarmerLoginDTO farmerDto)
+        {
+
+            var farmer = await farmerRepository.GetByEmailAsync(farmerDto.Email);
+
+            return mapper.Map<FarmerDTO>(farmer);
+        }
+
         public async Task<FarmerDTO> CreateAsync(CreateFarmerDTO farmerDto)
         {
-            var id = Guid.NewGuid();
-            var farmer = mapper.Map<Farmer>(farmerDto);
+            var farmerToAdd = mapper.Map<Farmer>(farmerDto);
 
-            await farmerRepository.AddAsync(farmer);
+            var farmer = await farmerRepository.AddAsync(farmerToAdd);
 
             return mapper.Map<FarmerDTO>(farmer);
         }

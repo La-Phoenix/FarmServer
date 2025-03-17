@@ -1,6 +1,7 @@
 ﻿using FarmServer.DTOs.Field;
 using FarmServer.Interfaces.IFarm;
 using FarmServer.Interfaces.IField;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -8,6 +9,7 @@ namespace FarmServer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FieldController : ControllerBase
     {
         private readonly IFieldService fieldService;

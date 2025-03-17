@@ -1,11 +1,13 @@
 ﻿using FarmServer.DTOs.Farm;
 using FarmServer.Interfaces.IFarm;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FarmServer.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class FarmController : Controller
     {
         private readonly IFarmService farmService;

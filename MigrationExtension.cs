@@ -7,12 +7,20 @@ namespace FarmServer
     {
         public static void ApplyMigration(this IApplicationBuilder app)
         {
-            using IServiceScope scope = app.ApplicationServices.CreateScope();
+            using var scope = app.ApplicationServices.CreateScope();
+            var services = scope.ServiceProvider;
+            var logger = services.GetRequiredService<ILogger<IApplicationBuilder>>();
 
-            using FarmDbContext dbContext = 
-                scope.ServiceProvider.GetRequiredService<FarmDbContext>();
-
-            dbContext.Database.Migrate();
+            try
+            {
+                var dbContext = services.GetRequiredService<FarmDbContext>();
+                dbContext.Database.Migrate();  // Apply pending migrations
+                logger.LogInformation("Database migration applied successfully.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while applying database migrations.");
+            }
         }
     }
 }

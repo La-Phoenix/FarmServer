@@ -1,0 +1,16 @@
+# This ensures automatic deployment whenever push to GitHub is made.
+services:
+  - type: web
+    name: farmserver
+    env: docker
+    plan: free
+    region: oregon
+    repo: https://github.com/La-Phoenix/FarmServer
+    branch: main
+    rootDir: .
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DATABASE_URL
+        sync: false

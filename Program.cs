@@ -14,11 +14,22 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 
+//Load environment-specific configurations
+var env = builder.Environment.EnvironmentName;
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 //Load JWT configuration
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 
-var secret = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret is missing.");
+// Get secret key dynamically (from env variable if not in config)
+var secret = builder.Configuration["JwtSettings:Secret"]
+    ?? Environment.GetEnvironmentVariable("JWT_SECRET")
+    ?? throw new InvalidOperationException("JWT Secret is missing.");
+
 var key = Encoding.UTF8.GetBytes(secret);
 
 //Registers JWT authentication as the default authentication method.
@@ -32,7 +43,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,       // Ensure token has not expired
             ValidateIssuerSigningKey = true, // Ensure token is signed by a trusted key
             // Configure Expected Token Values
-            ValidIssuer = jwtSettings["Issuer"],
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
             //ValidAudience = jwtSettings["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
@@ -40,9 +51,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 //Register authorization services in the DI(Dependency Injection) container
 builder.Services.AddAuthorization();
-//Registers MVC controllers (for API endpoints) in the DI container.
-builder.Services.AddControllers();
 
+//Registers MVC controllers (for API endpoints) in the DI container.
 // This tells the serializer to handle circular references instead of throwing an error
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -54,7 +64,6 @@ builder.Services.AddControllers()
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
 //Add a JWT Authorization header in Swagger
 builder.Services.AddSwaggerGen(c =>
 {
@@ -90,8 +99,15 @@ builder.Services.AddSwaggerGen(c =>
 // Register AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+//Reads the connection string dynamically from environment variables
+// Render provides the database connection string as an environment variable.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? throw new InvalidOperationException("Database Connection Is Missing.");
+
+
 builder.Services.AddDbContext<FarmDbContext>(options => 
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 
 // Register repositories
@@ -101,7 +117,6 @@ builder.Services.AddScoped<IFieldRepository, FieldRepository>();  // Repository 
 
 
 // Register services
-
 builder.Services.AddScoped<JwtService>();// Register JwtService
 builder.Services.AddScoped<IFarmService, FarmService>(); // Service for business logic`
 builder.Services.AddScoped<IFarmerService, FarmerService>(); // Service for business logic
@@ -118,11 +133,14 @@ if (app.Environment.IsDevelopment())
     app.ApplyMigration();
 }
 
-app.UseHttpsRedirection();
+if (app.Environment.IsProduction())
+{
+    app.ApplyMigration();
+}
 
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

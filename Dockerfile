@@ -13,10 +13,24 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["FarmServer/FarmServer.csproj", "FarmServer/"]
-RUN dotnet restore "./FarmServer/FarmServer.csproj"
+
+#For Dev
+#COPY ["FarmServer/FarmServer.csproj", "FarmServer/"]
+#RUN dotnet restore "./FarmServer/FarmServer.csproj"
+
+#For Prod
+COPY ["FarmServer.csproj", "."]
+RUN dotnet restore "./FarmServer.csproj"
+
+# Copy remaining source files
 COPY . .
-WORKDIR "/src/FarmServer"
+
+#For dev
+#WORKDIR "/src/FarmServer"
+
+#For Prod
+WORKDIR "/src"
+
 RUN dotnet build "./FarmServer.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

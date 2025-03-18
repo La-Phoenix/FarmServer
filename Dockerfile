@@ -15,12 +15,12 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 #For Dev
-COPY ["FarmServer/FarmServer.csproj", "FarmServer/"]
-RUN dotnet restore "./FarmServer/FarmServer.csproj"
+#COPY ["FarmServer/FarmServer.csproj", "FarmServer/"]
+#RUN dotnet restore "./FarmServer/FarmServer.csproj"
 
 #For Prod
-#COPY ["FarmServer.csproj", "."]
-#RUN dotnet restore "./FarmServer.csproj"
+COPY ["FarmServer.csproj", "."]
+RUN dotnet restore "./FarmServer.csproj"
 
 # Copy remaining source files
 COPY . .
@@ -29,7 +29,7 @@ COPY . .
 WORKDIR "/src/FarmServer"
 
 #For Prod
-#WORKDIR "/src"
+WORKDIR "/src"
 
 RUN dotnet build "./FarmServer.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
@@ -47,7 +47,7 @@ COPY --from=publish /app/publish .
 
 
 # Set environment variable
-#ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ASPNETCORE_ENVIRONMENT=Production
+#ENV ASPNETCORE_ENVIRONMENT=Development
 
 ENTRYPOINT ["dotnet", "FarmServer.dll"]

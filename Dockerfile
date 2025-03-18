@@ -26,7 +26,7 @@ RUN dotnet restore "./FarmServer.csproj"
 COPY . .
 
 #For dev
-WORKDIR "/src/FarmServer"
+#WORKDIR "/src/FarmServer"
 
 #For Prod
 WORKDIR "/src"

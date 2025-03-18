@@ -21,29 +21,6 @@ namespace FarmServer.Controllers
             this.jwtService = jwtService;
         }
 
-        [HttpPost("login")]
-        public async Task<ActionResult<FarmerDTO>> Login([FromBody] FarmerLoginDTO farmerLoginDTO)
-        {
-            try
-            {
-                //if (farmerLoginDTO == null || string.IsNullOrWhiteSpace(farmerLoginDTO.Email) || string.IsNullOrWhiteSpace(farmerLoginDTO.Password)) ;
-                if (farmerLoginDTO == null || string.IsNullOrWhiteSpace(farmerLoginDTO.Email)) return BadRequest(new { message = "Invalid login credentials." });
-                var farmer = await farmerService.Login(farmerLoginDTO);
-                if (farmer == null) return Unauthorized(new { message = "Invalid email or password." });
-                var token = jwtService.GenerateToken(farmer.Id, farmer.Email);
-
-                return Ok(new
-                {
-                    farmer,
-                    token
-                });
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error loging in");
-                return Problem(detail: "An error occurred while validating farmer.", statusCode: 500);
-            }
-        }
 
         [HttpGet]
         [Authorize]

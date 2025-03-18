@@ -22,12 +22,23 @@ namespace FarmServer.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetWelcomeMessage()
+        public ContentResult Welcome()
         {
-            return Ok(new { message = "Welcome to LaPhoenix's FarmServer! 🚜🌱" });
+            string html = @"
+                <html>
+                <head><title>FarmServer API</title></head>
+                <body>
+                    <h1>Welcome to FarmServer API 🌱</h1>
+                    <p>This API helps manage farmers, farms, and produce.</p>
+                    <p>📌 <strong>Base URL:</strong> <code>https://farmserver.onrender.com/api</code></p>
+                    <p>🔑 <strong>Authentication:</strong> Use Bearer Token from <code>/api/auth/login</code></p>
+                    <p>📜 <strong>API Docs & Testing:</strong> <a href='https://red-star-5463.postman.co/workspace/Personal~0dd7abf0-ba43-4be5-b08b-f4ccc6d6bbeb/collection/40959837-e67c1cea-03a7-4dc4-99eb-1c5c144914cb?action=share&creator=40959837' target='_blank'>Open in Postman</a></p>
+                </body>
+                </html>";
+            return new ContentResult { Content = html, ContentType = "text/html" };
         }
 
-         [HttpPost("login")]
+        [HttpPost("login")]
         public async Task<ActionResult<FarmerDTO>> Login([FromBody] FarmerLoginDTO farmerLoginDTO)
         {
             try

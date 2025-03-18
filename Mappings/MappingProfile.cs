@@ -39,7 +39,7 @@ namespace FarmServer.Mappings
             //Farmer
 
             //Map FarmerDTO to Farmer
-            CreateMap<CreateFarmDTO, Farmer>()
+            CreateMap<CreateFarmerDTO, Farmer>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name ?? string.Empty))//Handle null values
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Location ?? string.Empty));

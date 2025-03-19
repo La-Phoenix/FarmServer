@@ -61,6 +61,7 @@ namespace FarmServer.Controllers
             if (farmerDto == null) return BadRequest(new { message = "Invalid farmer data provided." });
             try
             {
+                if (string.IsNullOrWhiteSpace(farmerDto.Password)) return Unauthorized(new { message = "Invalid Email or Password" });
                 var farmerExist = await farmerService.GetByEmailAsync(farmerDto.Email);
                 if (farmerExist != null) return BadRequest(new { message = $"Farmer with email: {farmerDto.Email}, already exists." });
                 var farmer = await farmerService.CreateAsync(farmerDto);

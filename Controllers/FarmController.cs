@@ -80,7 +80,7 @@ namespace FarmServer.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, $"Error deleting farm with id: {id}");
-                return Problem(detail: $"An error occurred while deleting farm: {id}.", statusCode: 500);
+                return Problem(detail: $"An error occurred while Updating farm: {id}.", statusCode: 500);
             }
         }
 

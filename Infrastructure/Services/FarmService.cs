@@ -141,6 +141,8 @@ namespace FarmServer.Infrastructure.Services
                     var farmer = await farmerRepository.GetByEmailAsync(farmerEmail);
                     if (farmer != null)
                     {
+                        //Assign Default Password
+                        farmer.Password = "password";
                         farm.Farmers.Add(farmer);
                     }
                     else

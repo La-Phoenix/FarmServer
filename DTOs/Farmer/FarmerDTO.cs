@@ -10,7 +10,7 @@ namespace FarmServer.DTOs.Farmer
         public required string Email { get; set; }
 
         [JsonIgnore]  // This prevents the password from being returned in API responses
-        public required string Password { get; init; } //init allows Password to be set only during object initialization
+        public string? Password { get; private set; } //The property can only be modified (set) within the class that defines it.
 
         public required string Location { get; set; }
 

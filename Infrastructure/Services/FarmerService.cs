@@ -24,6 +24,9 @@ namespace FarmServer.Infrastructure.Services
         {
 
             var farmer = await farmerRepository.GetByEmailAsync(farmerDto.Email);
+            if (farmer == null) return null;
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(farmerDto.Password, farmer.Password);
+            if (!isPasswordValid) return null;
 
             return mapper.Map<FarmerDTO>(farmer);
         }

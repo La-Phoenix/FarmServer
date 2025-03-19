@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Welcome - FarmServer";
+}
+
+@model string
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmServer API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { color: #2c3e50; }
+        p { font-size: 16px; line-height: 1.6; }
+        code {
+            background-color: #eee;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Welcome to FarmServer API</h1>
+    <p>This API helps manage farmers, farms, and produce.</p>
+    <p>&#x1F4CC; <strong>Base URL:</strong> <code>https://farmserver.onrender.com/api</code></p>
+    <p>&#x1F511; <strong>Authentication:</strong> Use Bearer Token from <code>/api/auth/login</code></p>
+
+    <p>
+        &#x1F4DC;<strong>📜 API Docs & Testing:</strong>
+        <a href="@Model" target="_blank">Open in Postman</a>
+    </p>
+</body>
+</html>

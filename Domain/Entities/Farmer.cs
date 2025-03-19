@@ -5,6 +5,7 @@
         public Guid Id { get; set; }
         public required string Name { get; set; }
         public required string Email { get; set; }
+        public required string Password { get; set; }
         public required string Location { get; set; }
 
         // Many-to-Many: A Farmer can belong to multiple Farms

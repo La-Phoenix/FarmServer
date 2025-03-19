@@ -122,6 +122,8 @@ builder.Services.AddScoped<IFarmService, FarmService>(); // Service for business
 builder.Services.AddScoped<IFarmerService, FarmerService>(); // Service for business logic
 builder.Services.AddScoped<IFieldService, FieldService>(); // Service for business logic
 
+//For Controllers with views
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -130,17 +132,26 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.ApplyMigration();
+    app.ApplyMigration(); //Automatically Apply migrations
 }
 
 if (app.Environment.IsProduction())
 {
-    app.ApplyMigration();
+    app.ApplyMigration(); //Automatically Apply migrations
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
+//app.UseStaticFiles();
+app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Welcome}/{action=Welcome}/{id?}"); // Default route
+
 
 app.Run();

@@ -38,11 +38,15 @@ namespace FarmServer.Mappings
 
             //Farmer
 
-            //Map FarmerDTO to Farmer
+            
+            //Map FarmerDTO to Farmer For Farmer Registration
             CreateMap<CreateFarmerDTO, Farmer>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name ?? string.Empty))//Handle null values
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Location ?? string.Empty));
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email ?? string.Empty))
+                .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location ?? string.Empty))
+                .ForMember(dest => dest.Password, opt => opt.MapFrom(src =>  BCrypt.Net.BCrypt.HashPassword(src.Password)));
+
 
             //Map Farmer to FarmerDTO
             CreateMap<Farmer, FarmerDTO>();
